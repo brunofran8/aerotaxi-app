@@ -343,7 +343,6 @@ class Viaje {
   Viaje(this.o, this.d, this.ruta, this.ae, this.pl, this.pago, this.sv, this.cot, this.pts);
 }
 
-// Modelo para Lugares Turísticos Famosos
 class LugarTuristico {
   final String nombre;
   final String subtitulo;
@@ -368,7 +367,7 @@ final lugaresTuristicos = <LugarTuristico>[
   LugarTuristico(
     nombre: 'Teatro Colón',
     subtitulo: 'Joyas arquitectónicas y líricas',
-    descripcion: 'Considerado uno de los mejores teatros de ópera del mundo por su acústica y valor arquitectónico. Disfruta de un traslado aéreo directo evitando el tráfico del centro.',
+    descripcion: 'Considerado uno de los mejores teatros de ópera del mundo por su acústica. Disfruta de un traslado aéreo directo evitando el tráfico.',
     terminalCercana: 'Terminal Centro',
     imagenUrl: 'assets/images/teatro.jpg',
     codigoPromo: 'TURISMO25',
@@ -377,7 +376,7 @@ final lugaresTuristicos = <LugarTuristico>[
   LugarTuristico(
     nombre: 'Caminito & La Boca',
     subtitulo: 'Color, historia y tango',
-    descripcion: 'El icónico callejón museo con conventillos de chapa pintados de colores vivos. Viví la experiencia de sobrevolar el Riachuelo y aterrizar con vista panorámica.',
+    descripcion: 'El icónico callejón museo con conventillos pintados. Viví la experiencia de sobrevolar el Riachuelo y aterrizar con vista panorámica.',
     terminalCercana: 'Terminal Sur',
     imagenUrl: 'assets/images/caminito.jpg',
     codigoPromo: 'TURISMO25',
@@ -385,8 +384,8 @@ final lugaresTuristicos = <LugarTuristico>[
   ),
   LugarTuristico(
     nombre: 'Puerto Madero & Puente de la Mujer',
-    subtitulo: 'Modernidad y gastronomía junto al río',
-    descripcion: 'El barrio más moderno de la ciudad, famoso por sus diques convertidos en exclusivos restaurantes y el emblemático puente peatonal.',
+    subtitulo: 'Modernidad y gastronomía',
+    descripcion: 'El barrio más moderno de la ciudad, famoso por sus diques y el emblemático puente peatonal.',
     terminalCercana: 'Terminal Madero',
     imagenUrl: 'assets/images/puente.jpg',
     codigoPromo: 'TURISMO25',
@@ -395,7 +394,7 @@ final lugaresTuristicos = <LugarTuristico>[
   LugarTuristico(
     nombre: 'Bosques de Palermo & Rosedal',
     subtitulo: 'Naturaleza y lagos en la ciudad',
-    descripcion: 'El pulmón verde más grande de Buenos Aires, ideal para pasear entre rosaledas, lagos artificiales y monumentos históricos.',
+    descripcion: 'El pulmón verde más grande de Buenos Aires, ideal para pasear entre rosaledas y lagos artificiales.',
     terminalCercana: 'Terminal Palermo',
     imagenUrl: 'assets/images/palermo.jpg',
     codigoPromo: 'TURISMO25',
@@ -1043,7 +1042,6 @@ class Base extends CustomPainter {
     final tx = Color(dk ? 0xFFAAB2BD : 0xFF5F6368);
     final halo = Color(dk ? 0xFF1B2027 : 0xFFFFFFFF);
 
-    // Fondo base
     c.drawRect(Offset.zero & s, Paint()..color = Color(dk ? 0xFF1B2027 : 0xFFE6E4DE));
     c.drawPath(pAgua, Paint()..color = Color(dk ? 0xFF0F2A44 : 0xFFA9D3F2));
     c.drawPath(pCaba, Paint()..color = Color(dk ? 0xFF262D36 : 0xFFF4F2ED));
@@ -1051,7 +1049,6 @@ class Base extends CustomPainter {
     c.save();
     c.clipPath(pCaba);
 
-    // Cuadrícula / Manzanas urbanas (Grid de calles secundarias)
     if (sc > 0.4) {
       final g = Path();
       final paso = sc > 0.9 ? 8.0 : 16.0;
@@ -1072,7 +1069,6 @@ class Base extends CustomPainter {
       );
     }
 
-    // Dibujado de Parques
     for (final k in parques) {
       final r = Rect.fromCenter(center: geo(k.lo, k.la), width: k.w * kpx, height: k.h * kpx);
       c.drawRRect(
@@ -1082,7 +1078,6 @@ class Base extends CustomPainter {
     }
     c.restore();
 
-    // Riachuelo
     c.drawPath(
       pRia,
       Paint()
@@ -1093,7 +1088,6 @@ class Base extends CustomPainter {
         ..color = Color(dk ? 0xFF0F2A44 : 0xFFA9D3F2),
     );
 
-    // Trazado de Vías Principales y Avenidas
     final aw = max(9.0, 3.2 * u);
     final cas = Color(dk ? 0xFF2E3640 : 0xFFD3D0C8);
     final fil = Color(dk ? 0xFF48525F : 0xFFFFFFFF);
@@ -1115,7 +1109,6 @@ class Base extends CustomPainter {
       c.drawPath(paths[i], trazo(vias[i].t == 2 ? aw * 1.35 : aw, vias[i].t == 2 ? filA : fil));
     }
 
-    // Nombres de Regiones y Ríos
     for (final k in regiones) {
       txt(c, k.n, geo(k.lo, k.la), 12 * u, Color(dk ? 0xFF6B7683 : 0xFF9AA0A6), halo, b: true);
     }
@@ -1125,20 +1118,17 @@ class Base extends CustomPainter {
       txt(c, 'Riachuelo', geo(-58.3980, -34.6560), 10.5 * u, Color(dk ? 0xFF6FA8DC : 0xFF4A90C4), const Color(0x00000000), it: true);
     }
 
-    // Nombres de Barrios
     for (final k in barrios) {
       final ok = (k.pr == 0 && sc >= 0.2) || (k.pr == 1 && sc >= 0.34) || (k.pr == 2 && sc >= 0.6);
       if (ok) txt(c, k.n, geo(k.lo, k.la), (k.pr == 0 ? 12.5 : 11) * u, tx, halo, b: k.pr == 0);
     }
 
-    // Nombres de Parques al acercarse
     if (sc > 0.65) {
       for (final k in parques) {
         txt(c, k.n, geo(k.lo, k.la), 10 * u, Color(dk ? 0xFF7FB88A : 0xFF3C7A3C), halo);
       }
     }
 
-    // NOMBRES DE LAS CALLES Y AVENIDAS (Aparecen al hacer Zoom)
     if (sc > 0.45) {
       for (final v in vias) {
         if (v.q.length < 2) continue;
@@ -1394,7 +1384,6 @@ class App extends StatelessWidget {
       );
 }
 
-// Pantalla Splash (Animación Inicial / Logo Personalizado)
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -1694,8 +1683,6 @@ class _BannersState extends State<Banners> {
   }
 }
 
-// Widget de Banners Interactivos de Lugares Turísticos (para la parte de abajo de la pantalla de inicio)
-// Widget de Banners Interactivos de Lugares Turísticos (para la parte de abajo de la pantalla de inicio)
 class BannersTurismo extends StatelessWidget {
   const BannersTurismo({super.key});
 
@@ -1713,15 +1700,15 @@ class BannersTurismo extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(
+                child: Image.asset(
                   lugar.imagenUrl,
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 180,
-                    color: Colors.grey[300],
-                    child: const Center(child: Icon(Icons.image_not_supported, size: 40)),
+                    color: Colors.grey[800],
+                    child: const Center(child: Icon(Icons.landscape, size: 40, color: Colors.white54)),
                   ),
                 ),
               ),
@@ -1733,7 +1720,7 @@ class BannersTurismo extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 lugar.subtitulo,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 14, color: Colors.grey[400], fontWeight: FontWeight.w500),
               ),
               const Divider(height: 24),
               const Text(
@@ -1766,7 +1753,7 @@ class BannersTurismo extends StatelessWidget {
                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                           Text(
-                            'Obtené un ${(lugar.descuentoPct * 100).toInt()} de descuento volando a la ${lugar.terminalCercana}', // <-- ¡CORREGIDO AQUÍ!
+                            'Obtené un ${(lugar.descuentoPct * 100).toInt()}% de descuento volando a la ${lugar.terminalCercana}',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ],
@@ -1829,13 +1816,12 @@ class BannersTurismo extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                      // Cambia esto en las dos partes donde se dibuja la imagen dentro de BannersTurismo:
-                      Image.asset(
-                        lugar.imagenUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: Colors.grey[400],
-                          child: const Icon(Icons.image, color: Colors.white),
+                        Image.asset(
+                          lugar.imagenUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: Colors.grey[800],
+                            child: const Icon(Icons.landscape, color: Colors.white54, size: 36),
                           ),
                         ),
                         Container(
@@ -1860,7 +1846,7 @@ class BannersTurismo extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  '${(lugar.descuentoPct * 100).toInt()}% OFF', // <-- ¡CORREGIDO AQUÍ!
+                                  '${(lugar.descuentoPct * 100).toInt()}% OFF',
                                   style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                 ),
                               ),
@@ -1890,7 +1876,6 @@ class BannersTurismo extends StatelessWidget {
     );
   }
 }
-
 
 class Buscador extends StatefulWidget {
   final Terminal? ex;
@@ -1979,11 +1964,9 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
   int pin = 0;
   int pmin = 0;
   Offset ps = Offset.zero;
-  bool _mostrandoMapa = false;
   final rnd = Random();
 
-  // Control de la altura del panel inferior deslizable
-  double _panelHeight = 360.0;
+  bool _mostrandoMapa = false;
 
   @override
   void initState() {
@@ -2057,8 +2040,8 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     final p = pedido.value;
     if (p == null) return;
     pedido.value = null;
-    if (et != Etapa.elegir) return;
     setState(() {
+      _mostrandoMapa = true;
       final x = p.d;
       if (x != null) {
         if (x == o) o = null;
@@ -2096,6 +2079,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
   void rapido(String n) {
     final t = term(n);
     setState(() {
+      _mostrandoMapa = true;
       if (t == o) o = null;
       d = t;
     });
@@ -2103,6 +2087,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
   }
 
   Future<void> elegirTerm(bool origen) async {
+    setState(() => _mostrandoMapa = true);
     final r = await showModalBottomSheet<Terminal>(
       context: context,
       isScrollControlled: true,
@@ -2262,6 +2247,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     ctl.stop();
     ctl.reset();
     setState(() {
+      _mostrandoMapa = false;
       o = term('Terminal Centro');
       d = null;
       ae = null;
@@ -2299,8 +2285,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     return Offset(x, y);
   }
 
-  // Reemplaza o ajusta la estructura de tu widget build dentro de _ViajarState en main.dart:
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -2311,113 +2295,203 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
         final fase = et == Etapa.llegada ? 1 : (et == Etapa.viaje ? 2 : (et == Etapa.recibo ? 3 : 0));
         final al = sim.alertas.first;
 
+        if (!_mostrandoMapa) {
+          return Scaffold(
+            body: SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Hola, ${datos.pas.nombre}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                          Text('${sim.clima.nom} · ${sim.temp.round()}° · tráfico ${sim.trNom.toLowerCase()}',
+                              style: TextStyle(color: Colors.grey[400], fontSize: 13)),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(color: gris(ctx), borderRadius: BorderRadius.circular(20)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.emoji_events, size: 16, color: Colors.amber),
+                            const SizedBox(width: 4),
+                            Text('${datos.puntos} pts'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Material(
+                    color: gris(ctx),
+                    borderRadius: BorderRadius.circular(30),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: () => elegirTerm(false),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.search, color: verde),
+                            SizedBox(width: 12),
+                            Text('¿A dónde vas?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                            Spacer(),
+                            Chip(label: Text('Más tarde', style: TextStyle(fontSize: 11)), visualDensity: VisualDensity.compact),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: gris(ctx), borderRadius: BorderRadius.circular(14)),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: const CircleAvatar(radius: 14, backgroundColor: Color(0xFF333333), child: Icon(Icons.my_location, size: 14, color: Colors.blueAccent)),
+                          title: Text(o?.nombre ?? 'Ubicación actual (Origen)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          trailing: const Icon(Icons.chevron_right, size: 16),
+                          onTap: () => elegirTerm(true),
+                        ),
+                        const Divider(height: 6),
+                        ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: const CircleAvatar(radius: 14, backgroundColor: Color(0xFF333333), child: Icon(Icons.location_on, size: 14, color: Colors.redAccent)),
+                          title: Text(d?.nombre ?? 'Seleccionar destino', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          trailing: const Icon(Icons.chevron_right, size: 16),
+                          onTap: () => elegirTerm(false),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Banners(banners(ctx)),
+                  const SizedBox(height: 16),
+                  const BannersTurismo(),
+                ],
+              ),
+            ),
+          );
+        }
+
         return Stack(
           children: [
-            // SI _mostrandoMapa es true, mostramos el mapa interactivo de fondo; si es false, mostramos el inicio tipo "Servicios"
-            if (_mostrandoMapa) ...[
-              // 1. MAPA Y BOTONES FLOTANTES DE FONDO
-              Positioned.fill(
-                child: LayoutBuilder(
-                  builder: (c, bx) {
-                    vs = Size(bx.maxWidth, bx.maxHeight);
-                    if (!ini) {
-                      ini = true;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) tc.value = mat(yo, 0.5);
-                      });
-                    }
-                    return Stack(
-                      children: [
-                        Positioned.fill(
-                          child: InteractiveViewer(
-                            transformationController: tc,
-                            constrained: false,
-                            minScale: 0.16,
-                            maxScale: 5,
-                            boundaryMargin: const EdgeInsets.all(600),
-                            child: GestureDetector(
-                              onTapUp: (e) => tocar(e.localPosition),
-                              child: SizedBox(
-                                width: ancho,
-                                height: alto,
-                                child: Stack(
-                                  children: [
-                                    RepaintBoundary(
-                                      child: CustomPaint(size: const Size(ancho, alto), painter: Base(dk, esc)),
-                                    ),
-                                    CustomPaint(
-                                      size: const Size(ancho, alto),
-                                      painter: Din(sim, datos.terminales, o, d, ctl.value, fase, ps, dk, esc, rep),
-                                    ),
-                                  ],
-                                ),
+            Positioned.fill(
+              child: LayoutBuilder(
+                builder: (c, bx) {
+                  vs = Size(bx.maxWidth, bx.maxHeight);
+                  if (!ini) {
+                    ini = true;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) tc.value = mat(yo, 0.5);
+                    });
+                  }
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: InteractiveViewer(
+                          transformationController: tc,
+                          constrained: false,
+                          minScale: 0.16,
+                          maxScale: 5,
+                          boundaryMargin: const EdgeInsets.all(600),
+                          child: GestureDetector(
+                            onTapUp: (e) => tocar(e.localPosition),
+                            child: SizedBox(
+                              width: ancho,
+                              height: alto,
+                              child: Stack(
+                                children: [
+                                  RepaintBoundary(
+                                    child: CustomPaint(size: const Size(ancho, alto), painter: Base(dk, esc)),
+                                  ),
+                                  CustomPaint(
+                                    size: const Size(ancho, alto),
+                                    painter: Din(sim, datos.terminales, o, d, ctl.value, fase, ps, dk, esc, rep),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                        Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: Clim(sim.clima, rep)))),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: Clim(sim.clima, rep)))),
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  pill(ctx, sim.clima.ic, '${sim.temp.round()}° ${sim.clima.nom}', ci: sim.clima.col),
+                                  pill(ctx, Icons.air, '${sim.viento.round()} km/h'),
+                                  pill(ctx, Icons.traffic, 'Tráfico ${sim.trNom.toLowerCase()}', ci: sim.trCol),
+                                  pill(ctx, Icons.schedule, fmtH(sim.hora) + (sim.auto ? '' : ' (sim)')),
+                                  pill(ctx, Icons.flight, '${sim.cercanos} cerca', ci: verde),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            alertaW(al),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        top: 80,
+                        child: CircleAvatar(
+                          backgroundColor: cs.surface,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back),
+                            onPressed: () => setState(() => _mostrandoMapa = false),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 12,
+                        bottom: 340,
+                        child: Column(
+                          children: [
+                            fab(ctx, Icons.add, () => ir(vs.center(Offset.zero) * 0 + _centro(), cl(esc.value * 1.5, 0.16, 5))),
+                            fab(ctx, Icons.remove, () => ir(_centro(), cl(esc.value / 1.5, 0.16, 5))),
+                            fab(ctx, sim.verTr ? Icons.layers : Icons.layers_outlined, () => sim.setTr(!sim.verTr)),
+                            fab(ctx, Icons.tune, () => abrirSim(ctx)),
+                            fab(ctx, Icons.my_location, () => ir(yo, 0.9)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-              // Botón para volver al inicio sin mapa
-              Positioned(
-                top: 16,
-                left: 16,
-                child: FloatingActionButton.small(
-                  backgroundColor: cs.surface,
-                  child: const Icon(Icons.arrow_back),
-                  onPressed: () => setState(() => _mostrandoMapa = false),
-                ),
-              ),
-            ],
-
-            // 2. PANEL INFERIOR O VISTA PRINCIPAL DE INICIO (ESTILO SERVICIOS)
+            ),
             Positioned(
-              top: _mostrandoMapa ? null : 0,
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
-                height: _mostrandoMapa ? 320 : double.infinity,
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                 decoration: BoxDecoration(
                   color: cs.surface,
-                  borderRadius: _mostrandoMapa ? const BorderRadius.vertical(top: Radius.circular(24)) : BorderRadius.zero,
-                  boxShadow: _mostrandoMapa ? const [BoxShadow(blurRadius: 16, color: Colors.black26)] : [],
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black26)],
                 ),
-                child: ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    // Si NO estamos mostrando el mapa, el inicio luce exactamente como la sección Servicios con banners y turismo
-                    if (!_mostrandoMapa) ...[
-                      Text('Hola, ${datos.pas.nombre}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                      Text('${sim.clima.nom} · ${sim.temp.round()}° · tráfico ${sim.trNom.toLowerCase()}'),
-                      const SizedBox(height: 16),
-                      
-                      // Al hacer click aquí, activamos el mapa y la selección de destinos
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _mostrandoMapa = true; // <--- AQUí SE ACTIVA EL MAPA
-                          });
-                        },
-                        child: AbsorbPointer(
-                          child: tile(ctx, Icons.search, '¿A dónde vas?', 'Planificá tu próximo vuelo o elegí ruta'),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Banners(banners(ctx)),
-                      const SizedBox(height: 18),
-                      const BannersTurismo(),
-                    ] else ...[
-                      // Si el mapa está activo, aquí mostramos los controles de origen, destino y aeronaves
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        child: KeyedSubtree(key: ValueKey(et), child: cuerpo(ctx)),
-                      ),
-                    ],
-                  ],
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: KeyedSubtree(key: ValueKey(et), child: cuerpo(ctx)),
                 ),
               ),
             ),
@@ -2450,142 +2524,25 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // 1. Barra de búsqueda superior tipo "¿A dónde vas?" (Estilo Uber)
-        GestureDetector(
-          onTap: () => elegirTerm(false), // Abre el selector de destino / mapa
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: gris(c),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: Colors.grey.shade700, width: 0.8),
+        Row(
+          children: [
+            Expanded(
+              child: Text(d?.nombre ?? 'Seleccioná tu destino', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            child: Row(
-              children: const [
-                Icon(Icons.search, color: Colors.white70),
-                SizedBox(width: 12),
-                Text(
-                  "¿A dónde vas?",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                Spacer(),
-                Chip(
-                  label: Text("Más tarde", style: TextStyle(fontSize: 12)),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => setState(() => _mostrandoMapa = false),
             ),
-          ),
+          ],
         ),
-        const SizedBox(height: 16),
-
-        // 2. Destinos recientes o principales (Ej: Origen y Atajos rápidos)
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: gris(c),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Column(
-            children: [
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Color(0xFF333333),
-                  child: Icon(Icons.my_location, size: 16, color: Colors.blueAccent),
-                ),
-                title: Text(o?.nombre ?? 'Ubicación actual', style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Punto de partida (Origen)'),
-                trailing: const Icon(Icons.chevron_right, size: 18),
-                onTap: () => elegirTerm(true),
-              ),
-              const Divider(height: 12),
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Color(0xFF333333),
-                  child: Icon(Icons.location_on, size: 16, color: redAccentFallback = Colors.redAccent),
-                ),
-                title: Text(d?.nombre ?? 'Elegir destino en el mapa', style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Toque para cambiar destino o ver ruta'),
-                trailing: const Icon(Icons.chevron_right, size: 18),
-                onTap: () => elegirTerm(false),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // 3. Botones circulares de categorías ("Para ti" / Servicios rápidos)
-        const Text('Para ti', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 85,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildCategoryIcon(c, Icons.flight, 'Taxi Aéreo', () => rapido('Terminal Aeroparque')),
-              _buildCategoryIcon(c, Icons.people, 'Compartido', () {
-                setState(() => sv = Serv.compartido);
-              }),
-              _buildCategoryIcon(c, Icons.star, 'Premium', () {
-                setState(() => sv = Serv.premium);
-              }),
-              _buildCategoryIcon(c, Icons.home, 'Casa', () => rapido('Terminal Palermo')),
-              _buildCategoryIcon(c, Icons.work, 'Trabajo', () => rapido('Terminal Madero')),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // 4. Banners de Promociones y Novedades (El carrusel que ya tenías)
-        Banners(banners(c)),
-        const SizedBox(height: 16),
-
-        // 5. Banners Interactivos de Lugares Turísticos abajo
-        const BannersTurismo(),
-        const SizedBox(height: 16),
-
-        // 6. Botón principal de acción para continuar
+        const SizedBox(height: 8),
+        tile(c, Icons.my_location, o?.nombre ?? 'Ubicación actual', 'Origen', f: () => elegirTerm(true)),
+        tile(c, Icons.location_on, d?.nombre ?? 'Seleccionar destino', 'Destino', f: () => elegirTerm(false)),
+        const SizedBox(height: 12),
         boton('Ver aeronaves disponibles', ok ? () => setState(() => et = Etapa.opciones) : null),
-        const SizedBox(height: 20),
       ],
     );
   }
-
-  // Widget auxiliar para las burbujas circulares de servicios estilo Uber
-  Widget _buildCategoryIcon(BuildContext c, IconData icon, String label, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 14.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              height: 52,
-              width: 52,
-              decoration: BoxDecoration(
-                color: gris(c),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade700, width: 0.5),
-              ),
-              child: Icon(icon, size: 24, color: Theme.of(c).colorScheme.onSurface),
-            ),
-            const SizedBox(height: 6),
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  // Variable auxiliar por si acaso
-  static Color redAccentFallback = Colors.redAccent;
-  // (El resto de métodos pOpciones, pBuscando, pLlegada, etc., se mantienen igual)
 
   Widget tarjeta(BuildContext c, Aeronave a) {
     final s = ae == a;
