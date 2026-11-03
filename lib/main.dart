@@ -1979,6 +1979,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
   int pin = 0;
   int pmin = 0;
   Offset ps = Offset.zero;
+  bool _mostrandoMapa = false;
   final rnd = Random();
 
   // Control de la altura del panel inferior deslizable
@@ -2298,6 +2299,8 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     return Offset(x, y);
   }
 
+  // Reemplaza o ajusta la estructura de tu widget build dentro de _ViajarState en main.dart:
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -2310,150 +2313,111 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
 
         return Stack(
           children: [
-            // 1. MAPA Y BOTONES FLOTANTES DE FONDO
-            Positioned.fill(
-              child: LayoutBuilder(
-                builder: (c, bx) {
-                  vs = Size(bx.maxWidth, bx.maxHeight);
-                  if (!ini) {
-                    ini = true;
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) tc.value = mat(yo, 0.5);
-                    });
-                  }
-                  return Stack(
-                    children: [
-                      Positioned.fill(
-                        child: InteractiveViewer(
-                          transformationController: tc,
-                          constrained: false,
-                          minScale: 0.16,
-                          maxScale: 5,
-                          boundaryMargin: const EdgeInsets.all(600),
-                          child: GestureDetector(
-                            onTapUp: (e) => tocar(e.localPosition),
-                            child: SizedBox(
-                              width: ancho,
-                              height: alto,
-                              child: Stack(
-                                children: [
-                                  RepaintBoundary(
-                                    child: CustomPaint(size: const Size(ancho, alto), painter: Base(dk, esc)),
-                                  ),
-                                  CustomPaint(
-                                    size: const Size(ancho, alto),
-                                    painter: Din(sim, datos.terminales, o, d, ctl.value, fase, ps, dk, esc, rep),
-                                  ),
-                                ],
+            // SI _mostrandoMapa es true, mostramos el mapa interactivo de fondo; si es false, mostramos el inicio tipo "Servicios"
+            if (_mostrandoMapa) ...[
+              // 1. MAPA Y BOTONES FLOTANTES DE FONDO
+              Positioned.fill(
+                child: LayoutBuilder(
+                  builder: (c, bx) {
+                    vs = Size(bx.maxWidth, bx.maxHeight);
+                    if (!ini) {
+                      ini = true;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) tc.value = mat(yo, 0.5);
+                      });
+                    }
+                    return Stack(
+                      children: [
+                        Positioned.fill(
+                          child: InteractiveViewer(
+                            transformationController: tc,
+                            constrained: false,
+                            minScale: 0.16,
+                            maxScale: 5,
+                            boundaryMargin: const EdgeInsets.all(600),
+                            child: GestureDetector(
+                              onTapUp: (e) => tocar(e.localPosition),
+                              child: SizedBox(
+                                width: ancho,
+                                height: alto,
+                                child: Stack(
+                                  children: [
+                                    RepaintBoundary(
+                                      child: CustomPaint(size: const Size(ancho, alto), painter: Base(dk, esc)),
+                                    ),
+                                    CustomPaint(
+                                      size: const Size(ancho, alto),
+                                      painter: Din(sim, datos.terminales, o, d, ctl.value, fase, ps, dk, esc, rep),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: Clim(sim.clima, rep)))),
-                      
-                      // Indicadores superiores
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        right: 10,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  pill(ctx, sim.clima.ic, '${sim.temp.round()}° ${sim.clima.nom}', ci: sim.clima.col),
-                                  pill(ctx, Icons.air, '${sim.viento.round()} km/h'),
-                                  pill(ctx, Icons.traffic, 'Tráfico ${sim.trNom.toLowerCase()}', ci: sim.trCol),
-                                  pill(ctx, Icons.schedule, fmtH(sim.hora) + (sim.auto ? '' : ' (sim)')),
-                                  pill(ctx, Icons.flight, '${sim.cercanos} cerca', ci: verde),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            alertaW(al),
-                          ],
-                        ),
-                      ),
-
-                      // Botones flotantes del mapa (zoom, capas, etc.)
-                      Positioned(
-                        right: 12,
-                        bottom: 130,
-                        child: Column(
-                          children: [
-                            fab(ctx, Icons.add, () => ir(vs.center(Offset.zero) * 0 + _centro(), cl(esc.value * 1.5, 0.16, 5))),
-                            fab(ctx, Icons.remove, () => ir(_centro(), cl(esc.value / 1.5, 0.16, 5))),
-                            fab(ctx, sim.verTr ? Icons.layers : Icons.layers_outlined, () => sim.setTr(!sim.verTr)),
-                            fab(ctx, Icons.tune, () => abrirSim(ctx)),
-                            fab(ctx, Icons.my_location, () => ir(yo, 0.9)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                        Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: Clim(sim.clima, rep)))),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
+              // Botón para volver al inicio sin mapa
+              Positioned(
+                top: 16,
+                left: 16,
+                child: FloatingActionButton.small(
+                  backgroundColor: cs.surface,
+                  child: const Icon(Icons.arrow_back),
+                  onPressed: () => setState(() => _mostrandoMapa = false),
+                ),
+              ),
+            ],
 
-            // 2. PANEL INFERIOR DESLIZABLE POR GESTOS (A medida exacta)
+            // 2. PANEL INFERIOR O VISTA PRINCIPAL DE INICIO (ESTILO SERVICIOS)
             Positioned(
+              top: _mostrandoMapa ? null : 0,
               bottom: 0,
               left: 0,
               right: 0,
-              child: GestureDetector(
-                onVerticalDragUpdate: (details) {
-                  setState(() {
-                    // Deslizar hacia abajo reduce la altura, hacia arriba la aumenta
-                    _panelHeight -= details.delta.dy;
-                    _panelHeight = _panelHeight.clamp(70.0, MediaQuery.of(context).size.height * 0.80);
-                  });
-                },
-                child: Container(
-                  height: _panelHeight,
-                  decoration: BoxDecoration(
-                    color: cs.surface,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black26)],
-                  ),
-                  child: Column(
-                    children: [
-                      // Barra / tirador superior para arrastrar con facilidad
+              child: Container(
+                height: _mostrandoMapa ? 320 : double.infinity,
+                decoration: BoxDecoration(
+                  color: cs.surface,
+                  borderRadius: _mostrandoMapa ? const BorderRadius.vertical(top: Radius.circular(24)) : BorderRadius.zero,
+                  boxShadow: _mostrandoMapa ? const [BoxShadow(blurRadius: 16, color: Colors.black26)] : [],
+                ),
+                child: ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    // Si NO estamos mostrando el mapa, el inicio luce exactamente como la sección Servicios con banners y turismo
+                    if (!_mostrandoMapa) ...[
+                      Text('Hola, ${datos.pas.nombre}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                      Text('${sim.clima.nom} · ${sim.temp.round()}° · tráfico ${sim.trNom.toLowerCase()}'),
+                      const SizedBox(height: 16),
+                      
+                      // Al hacer click aquí, activamos el mapa y la selección de destinos
                       GestureDetector(
-                        onVerticalDragUpdate: (details) {
+                        onTap: () {
                           setState(() {
-                            _panelHeight -= details.delta.dy;
-                            _panelHeight = _panelHeight.clamp(70.0, MediaQuery.of(context).size.height * 0.80);
+                            _mostrandoMapa = true; // <--- AQUí SE ACTIVA EL MAPA
                           });
                         },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          color: Colors.transparent,
-                          child: Center(
-                            child: Container(
-                              width: 40,
-                              height: 5,
-                              decoration: BoxDecoration(color: Colors.grey[500], borderRadius: BorderRadius.circular(3)),
-                            ),
-                          ),
+                        child: AbsorbPointer(
+                          child: tile(ctx, Icons.search, '¿A dónde vas?', 'Planificá tu próximo vuelo o elegí ruta'),
                         ),
                       ),
-                      Expanded(
-                        child: ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                          children: [
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 250),
-                              child: KeyedSubtree(key: ValueKey(et), child: cuerpo(ctx)),
-                            ),
-                          ],
-                        ),
+                      const SizedBox(height: 14),
+                      Banners(banners(ctx)),
+                      const SizedBox(height: 18),
+                      const BannersTurismo(),
+                    ] else ...[
+                      // Si el mapa está activo, aquí mostramos los controles de origen, destino y aeronaves
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: KeyedSubtree(key: ValueKey(et), child: cuerpo(ctx)),
                       ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
