@@ -2486,46 +2486,141 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text('Hola, ${datos.pas.nombre}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        // 1. Barra de búsqueda superior tipo "¿A dónde vas?" (Estilo Uber)
+        GestureDetector(
+          onTap: () => elegirTerm(false), // Abre el selector de destino / mapa
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: gris(c),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.grey.shade700, width: 0.8),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(color: gris(c), borderRadius: BorderRadius.circular(20)),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.emoji_events, size: 16, color: Colors.amber),
-                  const SizedBox(width: 4),
-                  Text('${datos.puntos} · ${datos.nivel}'),
-                ],
+            child: Row(
+              children: const [
+                Icon(Icons.search, color: Colors.white70),
+                SizedBox(width: 12),
+                Text(
+                  "¿A dónde vas?",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                Spacer(),
+                Chip(
+                  label: Text("Más tarde", style: TextStyle(fontSize: 12)),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // 2. Destinos recientes o principales (Ej: Origen y Atajos rápidos)
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: gris(c),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Color(0xFF333333),
+                  child: Icon(Icons.my_location, size: 16, color: Colors.blueAccent),
+                ),
+                title: Text(o?.nombre ?? 'Ubicación actual', style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('Punto de partida (Origen)'),
+                trailing: const Icon(Icons.chevron_right, size: 18),
+                onTap: () => elegirTerm(true),
               ),
-            ),
-          ],
+              const Divider(height: 12),
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Color(0xFF333333),
+                  child: Icon(Icons.location_on, size: 16, color: redAccentFallback = Colors.redAccent),
+                ),
+                title: Text(d?.nombre ?? 'Elegir destino en el mapa', style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('Toque para cambiar destino o ver ruta'),
+                trailing: const Icon(Icons.chevron_right, size: 18),
+                onTap: () => elegirTerm(false),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 12),
-        tile(c, Icons.search, d?.nombre ?? '¿A dónde vas?',
-            d == null ? 'Elige una terminal o tócala en el mapa' : 'Destino', f: () => elegirTerm(false)),
-        tile(c, Icons.my_location, o?.nombre ?? 'Elige tu origen', 'Salida', f: () => elegirTerm(true)),
-        Wrap(
-          spacing: 8,
-          children: [
-            ActionChip(avatar: const Icon(Icons.home, size: 16), label: const Text('Casa'), onPressed: () => rapido('Terminal Palermo')),
-            ActionChip(avatar: const Icon(Icons.work, size: 16), label: const Text('Trabajo'), onPressed: () => rapido('Terminal Madero')),
-            ActionChip(avatar: const Icon(Icons.local_airport, size: 16), label: const Text('Aeroparque'), onPressed: () => rapido('Terminal Aeroparque')),
-          ],
+        const SizedBox(height: 16),
+
+        // 3. Botones circulares de categorías ("Para ti" / Servicios rápidos)
+        const Text('Para ti', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 85,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              _buildCategoryIcon(c, Icons.flight, 'Taxi Aéreo', () => rapido('Terminal Aeroparque')),
+              _buildCategoryIcon(c, Icons.people, 'Compartido', () {
+                setState(() => sv = Serv.compartido);
+              }),
+              _buildCategoryIcon(c, Icons.star, 'Premium', () {
+                setState(() => sv = Serv.premium);
+              }),
+              _buildCategoryIcon(c, Icons.home, 'Casa', () => rapido('Terminal Palermo')),
+              _buildCategoryIcon(c, Icons.work, 'Trabajo', () => rapido('Terminal Madero')),
+            ],
+          ),
         ),
-        const SizedBox(height: 12),
-        boton('Ver aeronaves', ok ? () => setState(() => et = Etapa.opciones) : null),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
+
+        // 4. Banners de Promociones y Novedades (El carrusel que ya tenías)
         Banners(banners(c)),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
+
+        // 5. Banners Interactivos de Lugares Turísticos abajo
         const BannersTurismo(),
+        const SizedBox(height: 16),
+
+        // 6. Botón principal de acción para continuar
+        boton('Ver aeronaves disponibles', ok ? () => setState(() => et = Etapa.opciones) : null),
+        const SizedBox(height: 20),
       ],
     );
   }
+
+  // Widget auxiliar para las burbujas circulares de servicios estilo Uber
+  Widget _buildCategoryIcon(BuildContext c, IconData icon, String label, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 14.0),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          children: [
+            Container(
+              height: 52,
+              width: 52,
+              decoration: BoxDecoration(
+                color: gris(c),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade700, width: 0.5),
+              ),
+              child: Icon(icon, size: 24, color: Theme.of(c).colorScheme.onSurface),
+            ),
+            const SizedBox(height: 6),
+            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  // Variable auxiliar por si acaso
+  static Color redAccentFallback = Colors.redAccent;
   // (El resto de métodos pOpciones, pBuscando, pLlegada, etc., se mantienen igual)
 
   Widget tarjeta(BuildContext c, Aeronave a) {
