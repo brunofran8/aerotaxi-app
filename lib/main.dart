@@ -3023,7 +3023,7 @@ class Actividad extends StatelessWidget {
                   ? const Center(child: Text('Todavía no hiciste ningún viaje'))
                   : ListView.separated(
                       itemCount: h.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
+                      separatorBuilder: (context, index) => const Divider(height: 1),
                       itemBuilder: (c, i) {
                         final v = h[i];
                         return ListTile(
