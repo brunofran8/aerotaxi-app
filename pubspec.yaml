@@ -1,0 +1,33 @@
+name: aero_taxi
+description: "AeroTaxi application."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_map: ^7.0.0 # O la versión más reciente compatible
+  latlong2: ^0.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  image_path: "assets/images/logo.png"
+  android: true
+  ios: true
+
+flutter:
+  uses-material-design: true
+
+  # Assets para tus imágenes turísticas o logos
+  assets:
+    - assets/images/
