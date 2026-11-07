@@ -3297,7 +3297,7 @@ class MapaOpenStreetMap extends StatelessWidget {
         // Capa de mosaicos (Tiles) provista por OpenStreetMap
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.aero_taxi', // Reemplaza con el nombre de paquete de tu app
+          userAgentPackageName: 'com.example.aerotaxi', // Reemplaza con el nombre de paquete de tu app
         ),
         // Puedes agregar marcadores, rutas o capas adicionales aquí abajo
       ],
