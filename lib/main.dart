@@ -7,117 +7,20 @@ import 'package:latlong2/latlong.dart' hide Path;
 void main() => runApp(const App());
 
 const verde = Color(0xFF06C167);
-const lon0 = -58.545;
-const lat0 = -34.515;
-const kpx = 100.0;
-const ancho = 2060.0;
-const alto = 2200.0;
+const yoLat = -34.6012;
+const yoLon = -58.3855;
 
-Offset geo(double lo, double la) => Offset((lo - lon0) * 92.0 * kpx, (lat0 - la) * 110.6 * kpx);
-double dkm(Offset a, Offset b) => (a - b).distance / kpx;
-double cl(double x, [double a = 0, double b = 1]) => x < a ? a : (x > b ? b : x);
 double ahoraH() {
   final n = DateTime.now();
   return n.hour + n.minute / 60;
 }
 
-final yo = geo(-58.3855, -34.6012);
-
-const caba = <List<double>>[
-  [-58.4720, -34.5390], [-58.4640, -34.5300], [-58.4500, -34.5290], [-58.4380, -34.5390],
-  [-58.4270, -34.5500], [-58.4130, -34.5560], [-58.4040, -34.5570], [-58.3990, -34.5640],
-  [-58.3880, -34.5700], [-58.3770, -34.5800], [-58.3690, -34.5900], [-58.3600, -34.5990],
-  [-58.3520, -34.6080], [-58.3410, -34.6100], [-58.3330, -34.6170], [-58.3380, -34.6300],
-  [-58.3640, -34.6340], [-58.3720, -34.6410], [-58.3840, -34.6480], [-58.3980, -34.6520],
-  [-58.4130, -34.6570], [-58.4270, -34.6640], [-58.4400, -34.6700], [-58.4440, -34.6800],
-  [-58.4560, -34.6960], [-58.4660, -34.7050], [-58.4800, -34.6990], [-58.4970, -34.6850],
-  [-58.5060, -34.6700], [-58.5160, -34.6560], [-58.5290, -34.6430], [-58.5300, -34.6260],
-  [-58.5240, -34.6160], [-58.5130, -34.6040], [-58.4990, -34.5900], [-58.4870, -34.5750],
-  [-58.4780, -34.5600], [-58.4720, -34.5470],
-];
-
-final agua = <List<double>>[
-  [-58.4900, -34.5150],
-  ...caba.sublist(0, 17),
-  [-58.3560, -34.6420], [-58.3440, -34.6600], [-58.3300, -34.6900], [-58.3200, -34.7150], [-58.3200, -34.5150],
-];
-
-Path poli(List<List<double>> l, [bool cerrar = true]) {
-  final p = Path();
-  for (var i = 0; i < l.length; i++) {
-    final q = geo(l[i][0], l[i][1]);
-    if (i == 0) {
-      p.moveTo(q.dx, q.dy);
-    } else {
-      p.lineTo(q.dx, q.dy);
-    }
-  }
-  if (cerrar) p.close();
-  return p;
+double dkm(LatLng a, LatLng b) {
+  const distance = Distance();
+  return distance.as(LengthUnit.Kilometer, a, b);
 }
 
-final pCaba = poli(caba);
-final pAgua = poli(agua);
-final pRia = poli(caba.sublist(16, 29), false);
-
-class Via {
-  final String n;
-  final int t;
-  final List<List<double>> p;
-  Via(this.n, this.t, this.p);
-  late final List<Offset> q = p.map((e) => geo(e[0], e[1])).toList();
-}
-
-final vias = <Via>[
-  Via('Av. Gral. Paz', 2, [...caba.sublist(28), caba[0]]),
-  Via('Au. 25 de Mayo', 2, [[-58.3730, -34.6110], [-58.3860, -34.6200], [-58.4040, -34.6340], [-58.4230, -34.6460], [-58.4440, -34.6560], [-58.4700, -34.6640], [-58.4960, -34.6690], [-58.5060, -34.6700]]),
-  Via('Au. Illia', 2, [[-58.3780, -34.5940], [-58.3870, -34.5830], [-58.3990, -34.5700], [-58.4060, -34.5640]]),
-  Via('Au. Lugones', 2, [[-58.4090, -34.5640], [-58.4230, -34.5550], [-58.4400, -34.5440], [-58.4580, -34.5370], [-58.4710, -34.5400]]),
-  Via('Av. del Libertador', 1, [[-58.4710, -34.5470], [-58.4570, -34.5520], [-58.4430, -34.5620], [-58.4290, -34.5700], [-58.4130, -34.5780], [-58.3990, -34.5850], [-58.3840, -34.5920], [-58.3780, -34.5950]]),
-  Via('Av. Cabildo', 1, [[-58.4730, -34.5470], [-58.4650, -34.5560], [-58.4540, -34.5620], [-58.4420, -34.5700], [-58.4290, -34.5790], [-58.4240, -34.5830]]),
-  Via('Av. Santa Fe', 1, [[-58.4240, -34.5830], [-58.4100, -34.5890], [-58.3960, -34.5940], [-58.3800, -34.5960]]),
-  Via('Av. Las Heras', 1, [[-58.4170, -34.5800], [-58.4000, -34.5880], [-58.3900, -34.5930]]),
-  Via('Av. Córdoba', 1, [[-58.3750, -34.5990], [-58.3980, -34.5990], [-58.4180, -34.5960], [-58.4400, -34.5920], [-58.4600, -34.5890]]),
-  Via('Av. Corrientes', 1, [[-58.3640, -34.6030], [-58.3820, -34.6037], [-58.4050, -34.6020], [-58.4280, -34.6000], [-58.4500, -34.5960], [-58.4640, -34.5910]]),
-  Via('Av. Rivadavia', 1, [[-58.3730, -34.6080], [-58.4080, -34.6100], [-58.4360, -34.6190], [-58.4650, -34.6280], [-58.4920, -34.6330], [-58.5230, -34.6380]]),
-  Via('Av. Independencia', 1, [[-58.3680, -34.6180], [-58.3900, -34.6170], [-58.4100, -34.6160], [-58.4250, -34.6150]]),
-  Via('Av. San Juan', 1, [[-58.3700, -34.6210], [-58.3900, -34.6260], [-58.4150, -34.6280], [-58.4400, -34.6330], [-58.4700, -34.6400]]),
-  Via('Av. 9 de Julio', 1, [[-58.3800, -34.5930], [-58.3817, -34.6037], [-58.3835, -34.6180], [-58.3840, -34.6280]]),
-  Via('Av. Callao', 1, [[-58.3930, -34.5880], [-58.3925, -34.6000], [-58.3930, -34.6110]]),
-  Via('Av. Pueyrredón', 1, [[-58.4000, -34.5850], [-58.4030, -34.5990], [-58.4070, -34.6100], [-58.4100, -34.6220]]),
-  Via('Av. Juan B. Justo', 1, [[-58.4290, -34.5800], [-58.4380, -34.5950], [-58.4460, -34.6090], [-58.4560, -34.6200], [-58.4750, -34.6290], [-58.5000, -34.6350]]),
-  Via('Av. Triunvirato', 1, [[-58.4840, -34.5740], [-58.4700, -34.5780], [-58.4560, -34.5830], [-58.4470, -34.5930]]),
-  Via('Av. Directorio', 1, [[-58.4250, -34.6320], [-58.4550, -34.6420], [-58.4850, -34.6520], [-58.5130, -34.6580]]),
-  Via('Av. Sáenz', 1, [[-58.4000, -34.6370], [-58.4200, -34.6470], [-58.4400, -34.6530]]),
-  Via('Av. Boedo', 1, [[-58.4170, -34.6030], [-58.4180, -34.6200], [-58.4190, -34.6340], [-58.4200, -34.6450]]),
-  Via('Av. Paseo Colón', 1, [[-58.3700, -34.5950], [-58.3710, -34.6080], [-58.3720, -34.6200], [-58.3680, -34.6300]]),
-  Via('Av. Lacarra', 1, [[-58.4800, -34.6500], [-58.4750, -34.6650], [-58.4720, -34.6800]]),
-];
-
-class Parque {
-  final String n;
-  final double lo, la, w, h;
-  Parque(this.n, this.lo, this.la, this.w, this.h);
-}
-
-final parques = <Parque>[
-  Parque('Bosques de Palermo', -58.4200, -34.5740, 2.4, 0.9),
-  Parque('Reserva Ecológica', -58.3445, -34.6200, 1.8, 1.2),
-  Parque('Parque Centenario', -58.4350, -34.6060, 0.5, 0.4),
-  Parque('Parque Chacabuco', -58.4380, -34.6350, 0.6, 0.5),
-  Parque('Parque Avellaneda', -58.4830, -34.6490, 1.0, 0.8),
-  Parque('Parque Lezama', -58.3700, -34.6280, 0.4, 0.4),
-  Parque('Parque Rivadavia', -58.4350, -34.6170, 0.5, 0.3),
-  Parque('Parque Indoamericano', -58.4560, -34.6650, 1.1, 0.8),
-  Parque('Parque de la Ciudad', -58.4780, -34.6770, 1.5, 1.2),
-  Parque('Parque Saavedra', -58.4660, -34.5600, 0.5, 0.4),
-  Parque('Parque Sarmiento', -58.4780, -34.5800, 0.8, 0.5),
-  Parque('Ciudad Universitaria', -58.4520, -34.5380, 1.4, 0.4),
-  Parque('Plaza San Martín', -58.3800, -34.5950, 0.3, 0.3),
-  Parque('Plaza de Mayo', -58.3730, -34.6080, 0.25, 0.25),
-  Parque('Parque Patricios', -58.4000, -34.6370, 0.4, 0.4),
-  Parque('Parque Los Andes', -58.4560, -34.5890, 0.4, 0.4),
-];
+double cl(double x, [double a = 0, double b = 1]) => x < a ? a : (x > b ? b : x);
 
 class Lugar {
   final String n;
@@ -125,25 +28,6 @@ class Lugar {
   final int pr;
   Lugar(this.n, this.lo, this.la, this.pr);
 }
-
-final barrios = <Lugar>[
-  Lugar('Núñez', -58.4560, -34.5480, 1), Lugar('Belgrano', -58.4500, -34.5630, 0),
-  Lugar('Colegiales', -58.4480, -34.5740, 1), Lugar('Palermo', -58.4300, -34.5880, 0),
-  Lugar('Recoleta', -58.3980, -34.5880, 0), Lugar('Retiro', -58.3740, -34.5920, 0),
-  Lugar('Microcentro', -58.3820, -34.6040, 1), Lugar('Puerto Madero', -58.3640, -34.6120, 0),
-  Lugar('Monserrat', -58.3770, -34.6150, 2), Lugar('San Telmo', -58.3700, -34.6210, 1),
-  Lugar('La Boca', -58.3630, -34.6350, 0), Lugar('Barracas', -58.3820, -34.6420, 1),
-  Lugar('Constitución', -58.3850, -34.6260, 2), Lugar('Balvanera', -58.4050, -34.6080, 1),
-  Lugar('Almagro', -58.4200, -34.6050, 1), Lugar('Boedo', -58.4180, -34.6230, 2),
-  Lugar('Caballito', -58.4400, -34.6190, 0), Lugar('Flores', -58.4650, -34.6270, 0),
-  Lugar('Villa Crespo', -58.4400, -34.5990, 2), Lugar('Chacarita', -58.4550, -34.5900, 2),
-  Lugar('Villa Urquiza', -58.4700, -34.5730, 1), Lugar('Villa Devoto', -58.5000, -34.6020, 1),
-  Lugar('Liniers', -58.5200, -34.6350, 1), Lugar('Mataderos', -58.5000, -34.6580, 1),
-  Lugar('Villa Lugano', -58.4700, -34.6800, 0), Lugar('Parque Chacabuco', -58.4380, -34.6350, 2),
-  Lugar('Nueva Pompeya', -58.4200, -34.6500, 2), Lugar('Villa Soldati', -58.4560, -34.6700, 2),
-  Lugar('Villa del Parque', -58.4950, -34.6050, 2), Lugar('Floresta', -58.4900, -34.6300, 2),
-  Lugar('Saavedra', -58.4650, -34.5540, 2), Lugar('Paternal', -58.4690, -34.5980, 2),
-];
 
 final regiones = <Lugar>[
   Lugar('VICENTE LÓPEZ', -58.4950, -34.5300, 0), Lugar('SAN MARTÍN', -58.5350, -34.5800, 0),
@@ -220,7 +104,7 @@ class Terminal {
   double lo;
   double la;
   EstadisticasTerminal est;
-  late Offset p = geo(lo, la);
+  late LatLng p = LatLng(la, lo);
   RutaVuelo ruta = RutaVuelo('', '', 0);
   double dem = 0.3;
   int cola = 1;
@@ -505,8 +389,6 @@ class Sim extends ChangeNotifier {
   Clima? fijo;
   int tk = 0;
   final Random r = Random();
-  late final List<List<double>> niv = vias.map((v) => List<double>.filled(v.p.length - 1, 0.0)).toList();
-  List<List<int>> inc = [];
   Timer? tm;
 
   Sim(this.ts) {
@@ -606,34 +488,14 @@ class Sim extends ChangeNotifier {
     if (base > 0.75) {
       l.add(Alerta(Icons.traffic, 'Hora pico: tráfico muy denso en las avenidas', const Color(0xFFC62828)));
     }
-    if (inc.isNotEmpty) {
-      l.add(Alerta(Icons.warning_amber, '${inc.length} incidente${inc.length > 1 ? 's' : ''} vial${inc.length > 1 ? 'es' : ''} en la ciudad', const Color(0xFF6D4C41)));
-    }
     if (l.isEmpty) l.add(Alerta(Icons.check_circle, 'Condiciones ideales para volar', verde));
     return l;
   }
 
+  get inc => null;
+
   void recalcular() {
     final b = base;
-    final cm = clima;
-    if (tk % 14 == 0) {
-      inc = [];
-      final n = 1 + r.nextInt(3);
-      for (var k = 0; k < n; k++) {
-        final i = r.nextInt(vias.length);
-        inc.add([i, r.nextInt(vias[i].p.length - 1)]);
-      }
-    }
-    for (var i = 0; i < niv.length; i++) {
-      final k = vias[i].t == 2 ? 1.08 : 1.0;
-      for (var j = 0; j < niv[i].length; j++) {
-        final w = sin(tk * 0.45 + i * 1.7 + j * 0.9) * 0.22 + (r.nextDouble() - 0.5) * 0.1;
-        niv[i][j] = cl(b * k + w + (cm == Clima.lluvia ? 0.08 : 0.0));
-      }
-    }
-    for (final x in inc) {
-      niv[x[0]][x[1]] = 0.96;
-    }
     for (var i = 0; i < ts.length; i++) {
       final t = ts[i];
       t.dem = cl(b * 0.6 + sin(tk * 0.3 + i) * 0.18 + 0.2 + r.nextDouble() * 0.08);
@@ -961,404 +823,6 @@ Widget ticket(BuildContext c, Viaje v) {
   );
 }
 
-void txt(Canvas c, String s, Offset p, double sz, Color col, Color halo,
-    {bool b = false, bool it = false, double rot = 0}) {
-  TextPainter mk(Paint? fg) => TextPainter(
-        text: TextSpan(
-          text: s,
-          style: TextStyle(
-            fontSize: sz,
-            fontWeight: b ? FontWeight.w700 : FontWeight.w500,
-            fontStyle: it ? FontStyle.italic : FontStyle.normal,
-            color: fg == null ? col : null,
-            foreground: fg,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-  final a = mk(Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = sz * 0.28
-    ..strokeJoin = StrokeJoin.round
-    ..color = halo);
-  final f = mk(null);
-  c.save();
-  c.translate(p.dx, p.dy);
-  if (rot != 0) c.rotate(rot);
-  final o = Offset(-f.width / 2, -f.height / 2);
-  a.paint(c, o);
-  f.paint(c, o);
-  c.restore();
-}
-
-Path arco(Offset a, Offset b) {
-  final m = (a + b) / 2;
-  final v = b - a;
-  final k = m + Offset(-v.dy, v.dx) * 0.18;
-  return Path()
-    ..moveTo(a.dx, a.dy)
-    ..quadraticBezierTo(k.dx, k.dy, b.dx, b.dy);
-}
-
-void avion(Canvas c, Offset p, double ang, double r) {
-  c.drawCircle(p, r * 1.18, Paint()..color = verde);
-  c.drawCircle(p, r, Paint()..color = Colors.black);
-  final ic = Icons.flight;
-  final tp = TextPainter(
-    text: TextSpan(
-      text: String.fromCharCode(ic.codePoint),
-      style: TextStyle(fontSize: r * 1.35, fontFamily: ic.fontFamily, package: ic.fontPackage, color: Colors.white),
-    ),
-    textDirection: TextDirection.ltr,
-  )..layout();
-  c.save();
-  c.translate(p.dx, p.dy);
-  c.rotate(ang);
-  tp.paint(c, Offset(-tp.width / 2, -tp.height / 2));
-  c.restore();
-}
-
-void pinta(Canvas c, Offset p, Color col, double u, String lb, Color fg, Color halo) {
-  final r = 13 * u;
-  final h = Offset(p.dx, p.dy - 24 * u);
-  final path = Path()
-    ..addOval(Rect.fromCircle(center: h, radius: r))
-    ..moveTo(h.dx - r * 0.75, h.dy + r * 0.66)
-    ..lineTo(p.dx, p.dy)
-    ..lineTo(h.dx + r * 0.75, h.dy + r * 0.66)
-    ..close();
-  c.drawPath(path, Paint()..color = col);
-  c.drawCircle(h, r * 0.38, Paint()..color = Colors.white);
-  txt(c, lb, Offset(p.dx, p.dy + 12 * u), 11.5 * u, fg, halo, b: true);
-}
-
-class Base extends CustomPainter {
-  final bool dk;
-  final ValueNotifier<double> esc;
-  Base(this.dk, this.esc) : super(repaint: esc);
-
-  @override
-  void paint(Canvas c, Size s) {
-    final sc = esc.value;
-    final u = 1 / sc;
-    final tx = Color(dk ? 0xFFAAB2BD : 0xFF5F6368);
-    final halo = Color(dk ? 0xFF1B2027 : 0xFFFFFFFF);
-
-    c.drawRect(Offset.zero & s, Paint()..color = Color(dk ? 0xFF1B2027 : 0xFFE6E4DE));
-    c.drawPath(pAgua, Paint()..color = Color(dk ? 0xFF0F2A44 : 0xFFA9D3F2));
-    c.drawPath(pCaba, Paint()..color = Color(dk ? 0xFF262D36 : 0xFFF4F2ED));
-
-    c.save();
-    c.clipPath(pCaba);
-
-    if (sc > 0.4) {
-      final g = Path();
-      final paso = sc > 0.9 ? 8.0 : 16.0;
-      for (var x = 0.0; x < ancho; x += paso) {
-        g.moveTo(x, 0);
-        g.lineTo(x, alto);
-      }
-      for (var y = 0.0; y < alto; y += paso) {
-        g.moveTo(0, y);
-        g.lineTo(ancho, y);
-      }
-      c.drawPath(
-        g,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = max(0.8, 1.2 * u)
-          ..color = Color(dk ? 0xFF28303A : 0xFFECEAE4),
-      );
-    }
-
-    for (final k in parques) {
-      final r = Rect.fromCenter(center: geo(k.lo, k.la), width: k.w * kpx, height: k.h * kpx);
-      c.drawRRect(
-        RRect.fromRectAndRadius(r, Radius.circular(min(k.w, k.h) * kpx * 0.35)),
-        Paint()..color = Color(dk ? 0xFF1F3A2B : 0xFFC9E6BE),
-      );
-    }
-    c.restore();
-
-    c.drawPath(
-      pRia,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..strokeWidth = max(8.0, 3 * u)
-        ..color = Color(dk ? 0xFF0F2A44 : 0xFFA9D3F2),
-    );
-
-    final aw = max(9.0, 3.2 * u);
-    final cas = Color(dk ? 0xFF2E3640 : 0xFFD3D0C8);
-    final fil = Color(dk ? 0xFF48525F : 0xFFFFFFFF);
-    final casA = Color(dk ? 0xFF6B5320 : 0xFFE5A83A);
-    final filA = Color(dk ? 0xFF9A7A2E : 0xFFFBCB6B);
-
-    Paint trazo(double w, Color col) => Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..strokeWidth = w
-      ..color = col;
-
-    final paths = [for (final v in vias) poli(v.p, false)];
-    for (var i = 0; i < vias.length; i++) {
-      c.drawPath(paths[i], trazo(vias[i].t == 2 ? aw * 1.35 + 3 : aw + 3, vias[i].t == 2 ? casA : cas));
-    }
-    for (var i = 0; i < vias.length; i++) {
-      c.drawPath(paths[i], trazo(vias[i].t == 2 ? aw * 1.35 : aw, vias[i].t == 2 ? filA : fil));
-    }
-
-    for (final k in regiones) {
-      txt(c, k.n, geo(k.lo, k.la), 12 * u, Color(dk ? 0xFF6B7683 : 0xFF9AA0A6), halo, b: true);
-    }
-    txt(c, 'Río de la Plata', geo(-58.3420, -34.5700), 15 * u, Color(dk ? 0xFF6FA8DC : 0xFF4A90C4), const Color(0x00000000), it: true);
-
-    if (sc > 0.45) {
-      txt(c, 'Riachuelo', geo(-58.3980, -34.6560), 10.5 * u, Color(dk ? 0xFF6FA8DC : 0xFF4A90C4), const Color(0x00000000), it: true);
-    }
-
-    for (final k in barrios) {
-      final ok = (k.pr == 0 && sc >= 0.2) || (k.pr == 1 && sc >= 0.34) || (k.pr == 2 && sc >= 0.6);
-      if (ok) txt(c, k.n, geo(k.lo, k.la), (k.pr == 0 ? 12.5 : 11) * u, tx, halo, b: k.pr == 0);
-    }
-
-    if (sc > 0.65) {
-      for (final k in parques) {
-        txt(c, k.n, geo(k.lo, k.la), 10 * u, Color(dk ? 0xFF7FB88A : 0xFF3C7A3C), halo);
-      }
-    }
-
-    if (sc > 0.45) {
-      for (final v in vias) {
-        if (v.q.length < 2) continue;
-        final j = (v.q.length - 2) ~/ 2;
-        final a = v.q[j];
-        final b = v.q[j + 1];
-        var ang = atan2(b.dy - a.dy, b.dx - a.dx);
-        if (ang > pi / 2) ang -= pi;
-        if (ang < -pi / 2) ang += pi;
-
-        final fontSize = (v.t == 2 ? 11.0 : 9.5) * u;
-        txt(
-          c,
-          v.n,
-          (a + b) / 2,
-          fontSize,
-          v.t == 2 ? (dk ? const Color(0xFFFFD54F) : const Color(0xFFB78103)) : tx,
-          Color(dk ? 0xFF1B2027 : 0xFFFFFFFF),
-          b: v.t == 2,
-          rot: ang,
-        );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant Base o) => o.dk != dk;
-}
-
-class Din extends CustomPainter {
-  final Sim sm;
-  final List<Terminal> ts;
-  final Terminal? o;
-  final Terminal? d;
-  final double t;
-  final int fase;
-  final Offset ps;
-  final bool dk;
-  final ValueNotifier<double> esc;
-  final AnimationController rep;
-  Din(this.sm, this.ts, this.o, this.d, this.t, this.fase, this.ps, this.dk, this.esc, this.rep)
-      : super(repaint: Listenable.merge([esc, rep, sm]));
-
-  @override
-  void paint(Canvas c, Size s) {
-    final sc = esc.value;
-    final u = 1 / sc;
-    final fg = dk ? Colors.white : const Color(0xFF202124);
-    final halo = dk ? const Color(0xFF1B2027) : Colors.white;
-
-    if (sm.verTr) {
-      final pt = Paint()..strokeCap = StrokeCap.round;
-      final tw = max(5.0, 2.4 * u);
-      for (var i = 0; i < vias.length; i++) {
-        final v = vias[i];
-        pt.strokeWidth = v.t == 2 ? tw + 2 : tw;
-        for (var j = 0; j < v.q.length - 1; j++) {
-          pt.color = nivCol(sm.niv[i][j]);
-          c.drawLine(v.q[j], v.q[j + 1], pt);
-        }
-      }
-      for (final x in sm.inc) {
-        final v = vias[x[0]];
-        final m = (v.q[x[1]] + v.q[x[1] + 1]) / 2;
-        c.drawCircle(m, 10 * u, Paint()..color = Colors.white);
-        c.drawCircle(m, 8 * u, Paint()..color = const Color(0xFFD32F2F));
-        txt(c, '!', m, 11 * u, Colors.white, const Color(0x00000000), b: true);
-      }
-    }
-
-    final oo = o;
-    final dd = d;
-    if (oo != null && dd != null) {
-      final pth = arco(oo.p, dd.p);
-      c.drawPath(
-        pth,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 9 * u
-          ..strokeCap = StrokeCap.round
-          ..color = Colors.white,
-      );
-      c.drawPath(
-        pth,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 5.5 * u
-          ..strokeCap = StrokeCap.round
-          ..color = const Color(0xFF4285F4),
-      );
-      if (fase == 2 || fase == 3) {
-        final m = pth.computeMetrics().first;
-        c.drawPath(
-          m.extractPath(0, m.length * (fase == 3 ? 1.0 : t)),
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 5.5 * u
-            ..strokeCap = StrokeCap.round
-            ..color = verde,
-        );
-      }
-    }
-
-    if (sm.clima != Clima.tormenta) {
-      final ic = Icons.flight;
-      final tp = TextPainter(
-        text: TextSpan(
-          text: String.fromCharCode(ic.codePoint),
-          style: TextStyle(
-            fontSize: 17 * u,
-            fontFamily: ic.fontFamily,
-            package: ic.fontPackage,
-            color: dk ? const Color(0xFFBDC1C6) : const Color(0xFF3C4043),
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      for (var k = 0; k < sm.cercanos; k++) {
-        final tm = ts[(k * 5 + 3) % ts.length];
-        final dir = k.isEven ? 1.0 : -1.0;
-        final ph = rep.value * 2 * pi * (1 + k % 3) * dir + k;
-        final p = tm.p + Offset(cos(ph), sin(ph)) * (40.0 + (k % 4) * 28);
-        c.save();
-        c.translate(p.dx, p.dy);
-        c.rotate(k.isEven ? ph + pi : ph);
-        tp.paint(c, Offset(-tp.width / 2, -tp.height / 2));
-        c.restore();
-      }
-    }
-
-    final pu = 1 + 0.5 * sin(rep.value * 2 * pi * 20);
-    c.drawCircle(yo, 16 * u * pu, Paint()..color = const Color(0x334285F4));
-    c.drawCircle(yo, 8 * u, Paint()..color = Colors.white);
-    c.drawCircle(yo, 6 * u, Paint()..color = const Color(0xFF4285F4));
-
-    for (final x in ts) {
-      if (x == oo || x == dd) continue;
-      final p = x.p;
-      c.drawCircle(p, 7.5 * u, Paint()..color = dk ? const Color(0xFF1B2027) : Colors.white);
-      c.drawCircle(
-        p,
-        7.5 * u,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.4 * u
-          ..color = dk ? const Color(0xFF9AA0A6) : const Color(0xFF5F6368),
-      );
-      c.drawCircle(p, 2.6 * u, Paint()..color = dk ? const Color(0xFF9AA0A6) : const Color(0xFF5F6368));
-      if (sc > 0.5) txt(c, x.nombre.replaceFirst('Terminal ', ''), p + Offset(0, 15 * u), 10.5 * u, fg, halo, b: true);
-      final sg = sm.surge(x);
-      if (sg >= 1.3 && sc > 0.3) {
-        final r = RRect.fromRectAndRadius(
-          Rect.fromCenter(center: p + Offset(0, -17 * u), width: 30 * u, height: 14 * u),
-          Radius.circular(7 * u),
-        );
-        c.drawRRect(r, Paint()..color = sg >= 1.6 ? const Color(0xFFD32F2F) : const Color(0xFFEF6C00));
-        txt(c, 'x${sg.toStringAsFixed(1)}', p + Offset(0, -17 * u), 9 * u, Colors.white, const Color(0x00000000), b: true);
-      }
-    }
-
-    if (oo != null) pinta(c, oo.p, verde, u, oo.nombre.replaceFirst('Terminal ', ''), fg, halo);
-    if (dd != null) pinta(c, dd.p, dk ? Colors.white : Colors.black, u, dd.nombre.replaceFirst('Terminal ', ''), fg, halo);
-
-    if (fase == 1 && oo != null) {
-      final e = Curves.easeInOut.transform(t);
-      final p = Offset.lerp(ps, oo.p, e)!;
-      final v = oo.p - ps;
-      c.drawLine(
-        ps,
-        oo.p,
-        Paint()
-          ..color = const Color(0x884285F4)
-          ..strokeWidth = 3 * u,
-      );
-      avion(c, p, atan2(v.dy, v.dx) + pi / 2, 16 * u);
-    } else if ((fase == 2 || fase == 3) && oo != null && dd != null) {
-      final m = arco(oo.p, dd.p).computeMetrics().first;
-      final tg = m.getTangentForOffset(m.length * (fase == 3 ? 1.0 : t));
-      if (tg != null) avion(c, tg.position, atan2(tg.vector.dy, tg.vector.dx) + pi / 2, 16 * u);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant Din o) => true;
-}
-
-class Clim extends CustomPainter {
-  final Clima k;
-  final Animation<double> rep;
-  Clim(this.k, this.rep) : super(repaint: rep);
-
-  @override
-  void paint(Canvas c, Size s) {
-    final t = rep.value;
-    if (k == Clima.lluvia || k == Clima.tormenta) {
-      final n = k == Clima.tormenta ? 140 : 80;
-      final p = Paint()
-        ..color = const Color(0x99B3D4F5)
-        ..strokeWidth = 1.4;
-      for (var i = 0; i < n; i++) {
-        final x = ((i * 97) % 211) / 211 * s.width;
-        final y = ((((i * 53) % 101) / 101) + t * 60) % 1.0 * s.height;
-        c.drawLine(Offset(x, y), Offset(x - 5, y + 16), p);
-      }
-      c.drawRect(Offset.zero & s, Paint()..color = Color(k == Clima.tormenta ? 0x40102040 : 0x1A2040A0));
-      if (k == Clima.tormenta && (t * 40).floor() % 7 == 0 && (t * 40) % 1 < 0.25) {
-        c.drawRect(Offset.zero & s, Paint()..color = const Color(0x55FFFFFF));
-      }
-    } else if (k == Clima.niebla) {
-      c.drawRect(Offset.zero & s, Paint()..color = const Color(0x55FFFFFF));
-    } else if (k == Clima.nublado) {
-      c.drawRect(Offset.zero & s, Paint()..color = const Color(0x14455A64));
-    } else if (k == Clima.viento) {
-      final p = Paint()
-        ..color = const Color(0x55FFFFFF)
-        ..strokeWidth = 1.6;
-      for (var i = 0; i < 14; i++) {
-        final y = ((i * 71) % 97) / 97 * s.height;
-        final x = ((((i * 37) % 53) / 53) + t * 25) % 1.0 * s.width;
-        c.drawLine(Offset(x, y), Offset(x + 40, y), p);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant Clim o) => o.k != k;
-}
-
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -1401,19 +865,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
-
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
-
     _controller.forward();
 
     Timer(const Duration(seconds: 3), () {
@@ -1462,11 +920,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       color: verde,
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(
-                          color: verde.withAlpha(128),
-                          blurRadius: 30,
-                          spreadRadius: 10,
-                        ),
+                        BoxShadow(color: verde.withAlpha(128), blurRadius: 30, spreadRadius: 10),
                       ],
                     ),
                     child: const Icon(Icons.flight_takeoff, size: 64, color: Colors.white),
@@ -1474,21 +928,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   const SizedBox(height: 24),
                   const Text(
                     'AeroTaxi',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold, letterSpacing: 2),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Tu movilidad aérea urbana',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                      letterSpacing: 1,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16, letterSpacing: 1),
                   ),
                 ],
               ),
@@ -1715,25 +1160,13 @@ class BannersTurismo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                lugar.nombre,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              Text(lugar.nombre, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text(
-                lugar.subtitulo,
-                style: TextStyle(fontSize: 14, color: Colors.grey[400], fontWeight: FontWeight.w500),
-              ),
+              Text(lugar.subtitulo, style: TextStyle(fontSize: 14, color: Colors.grey[400], fontWeight: FontWeight.w500)),
               const Divider(height: 24),
-              const Text(
-                'Descripción del atractivo',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              const Text('Descripción del atractivo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
-              Text(
-                lugar.descripcion,
-                style: const TextStyle(fontSize: 14, height: 1.4),
-              ),
+              Text(lugar.descripcion, style: const TextStyle(fontSize: 14, height: 1.4)),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -1750,14 +1183,9 @@ class BannersTurismo extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Promoción activa: ${lugar.codigoPromo}',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          Text(
-                            'Obtené un ${(lugar.descuentoPct * 100).toInt()}% de descuento volando a la ${lugar.terminalCercana}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
+                          Text('Promoción activa: ${lugar.codigoPromo}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          Text('Obtené un ${(lugar.descuentoPct * 100).toInt()}% de descuento volando a la ${lugar.terminalCercana}',
+                              style: const TextStyle(fontSize: 12)),
                         ],
                       ),
                     ),
@@ -1792,10 +1220,7 @@ class BannersTurismo extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            'Circuitos y Lugares Turísticos',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          child: Text('Circuitos y Lugares Turísticos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
         SizedBox(
           height: 160,
@@ -1843,26 +1268,16 @@ class BannersTurismo extends StatelessWidget {
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: verde,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  '${(lugar.descuentoPct * 100).toInt()}% OFF',
-                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                                ),
+                                decoration: BoxDecoration(color: verde, borderRadius: BorderRadius.circular(8)),
+                                child: Text('${(lugar.descuentoPct * 100).toInt()}% OFF',
+                                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                lugar.nombre,
-                                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                lugar.terminalCercana,
-                                style: const TextStyle(color: Colors.white70, fontSize: 11),
-                              ),
+                              Text(lugar.nombre,
+                                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis),
+                              Text(lugar.terminalCercana, style: const TextStyle(color: Colors.white70, fontSize: 11)),
                             ],
                           ),
                         ),
@@ -1921,7 +1336,7 @@ class _BuscadorState extends State<Buscador> {
                   return ListTile(
                     leading: const CircleAvatar(child: Icon(Icons.flight_land)),
                     title: Text(t.nombre),
-                    subtitle: Text('${t.ubic} · ${dkm(yo, t.p).toStringAsFixed(1)} km de vos'),
+                    subtitle: Text('${t.ubic} · ${dkm(LatLng(yoLat, yoLon), t.p).toStringAsFixed(1)} km de vos'),
                     trailing: sg >= 1.2 ? chipSg(sg) : null,
                     onTap: () => Navigator.pop(c, t),
                   );
@@ -1944,14 +1359,9 @@ class Viajar extends StatefulWidget {
 }
 
 class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
-  final tc = TransformationController();
-  final esc = ValueNotifier<double>(0.5);
+  final mapController = MapController();
   late final AnimationController ctl;
   late final AnimationController rep;
-  late final AnimationController cam;
-  Animation<Matrix4>? camA;
-  Size vs = Size.zero;
-  bool ini = false;
   Terminal? o;
   Terminal? d;
   Aeronave? ae;
@@ -1965,7 +1375,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
   int est = 0;
   int pin = 0;
   int pmin = 0;
-  Offset ps = Offset.zero;
   final rnd = Random();
 
   bool _mostrandoMapa = false;
@@ -1975,12 +1384,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     super.initState();
     ctl = AnimationController(vsync: this);
     rep = AnimationController(vsync: this, duration: const Duration(seconds: 40))..repeat();
-    cam = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
-    cam.addListener(() {
-      final a = camA;
-      if (a != null) tc.value = a.value;
-    });
-    tc.addListener(() => esc.value = tc.value.getMaxScaleOnAxis());
     ctl.addListener(() => setState(() {}));
     ctl.addStatusListener((s) {
       if (s == AnimationStatus.completed) fin();
@@ -1995,9 +1398,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     pedido.removeListener(recibirPedido);
     ctl.dispose();
     rep.dispose();
-    cam.dispose();
-    tc.dispose();
-    esc.dispose();
     super.dispose();
   }
 
@@ -2008,33 +1408,16 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
 
   Cot cot(Aeronave a) => sim.cotizar(o!, d!, a, sv, pr);
 
-  Matrix4 mat(Offset w, double s) => Matrix4(s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1, 0, vs.width / 2 - w.dx * s, vs.height / 2 - w.dy * s, 0, 1);
-
-  void ir(Offset w, double s) {
-    if (vs.isEmpty) return;
-    camA = Matrix4Tween(begin: tc.value, end: mat(w, s)).animate(CurvedAnimation(parent: cam, curve: Curves.easeInOut));
-    cam.forward(from: 0);
-  }
-
-  void fit(Offset a, Offset b) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || vs.isEmpty) return;
-      final w = (a.dx - b.dx).abs() + 360;
-      final h = (a.dy - b.dy).abs() + 460;
-      ir((a + b) / 2, cl(min(vs.width / w, vs.height / h), 0.2, 2.5));
-    });
-  }
-
   void ajustar() {
     final a = o;
     final b = d;
     if (a != null && b != null) {
-      fit(a.p, b.p);
+      final centerLat = (a.la + b.la) / 2;
+      final centerLon = (a.lo + b.lo) / 2;
+      mapController.move(LatLng(centerLat, centerLon), 13.0);
     } else if (a != null || b != null) {
       final u = (a ?? b)!;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) ir(u.p, 0.9);
-      });
+      mapController.move(LatLng(u.la, u.lo), 14.0);
     }
   }
 
@@ -2051,39 +1434,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
       }
       final s = p.s;
       if (s != null) sv = s;
-    });
-    ajustar();
-  }
-
-  void tocar(Offset p) {
-    if (et != Etapa.elegir && et != Etapa.opciones) return;
-    Terminal? b;
-    var bd = 26 / esc.value;
-    for (final t in datos.terminales) {
-      final dd = (t.p - p).distance;
-      if (dd < bd) {
-        bd = dd;
-        b = t;
-      }
-    }
-    final x = b;
-    if (x == null) return;
-    setState(() {
-      if (o == null) {
-        o = x;
-      } else if (x != o) {
-        d = x;
-      }
-    });
-    ajustar();
-  }
-
-  void rapido(String n) {
-    final t = term(n);
-    setState(() {
-      _mostrandoMapa = true;
-      if (t == o) o = null;
-      d = t;
     });
     ajustar();
   }
@@ -2202,13 +1552,11 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     pl = datos.pilotos[rnd.nextInt(datos.pilotos.length)];
     pin = 1000 + rnd.nextInt(9000);
     pmin = cot(ae!).llega;
-    final ang = rnd.nextDouble() * 2 * pi;
-    ps = o!.p + Offset(cos(ang), sin(ang)) * (350 + rnd.nextDouble() * 250);
     lleg = false;
     ctl.duration = const Duration(seconds: 8);
     ctl.forward(from: 0);
     setState(() => et = Etapa.llegada);
-    fit(ps, o!.p);
+    mapController.move(o!.p, 14.0);
   }
 
   void fin() {
@@ -2224,7 +1572,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     ctl.duration = Duration(seconds: max(12, min(28, c.mins * 2)));
     ctl.forward(from: 0);
     setState(() => et = Etapa.viaje);
-    fit(o!.p, d!.p);
+    ajustar();
   }
 
   void terminar() {
@@ -2260,9 +1608,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
       sv = Serv.estandar;
       et = Etapa.elegir;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ir(yo, 0.5);
-    });
+    mapController.move(const LatLng(yoLat, yoLon), 13.0);
   }
 
   Future<void> cancelar() async {
@@ -2280,21 +1626,12 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
     if (ok == true) reset();
   }
 
-  Offset _centro() {
-    final m = Matrix4.inverted(tc.value);
-    final x = m.storage[0] * vs.width / 2 + m.storage[4] * vs.height / 2 + m.storage[12];
-    final y = m.storage[1] * vs.width / 2 + m.storage[5] * vs.height / 2 + m.storage[13];
-    return Offset(x, y);
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: Listenable.merge([sim, datos]),
       builder: (ctx, _) {
-        final dk = Theme.of(ctx).brightness == Brightness.dark || sim.noche;
         final cs = Theme.of(ctx).colorScheme;
-        final fase = et == Etapa.llegada ? 1 : (et == Etapa.viaje ? 2 : (et == Etapa.recibo ? 3 : 0));
         final al = sim.alertas.first;
 
         if (!_mostrandoMapa) {
@@ -2385,99 +1722,146 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
           );
         }
 
+        LatLng? planePos;
+        if (et == Etapa.llegada && o != null) {
+          final startLat = o!.la + 0.02;
+          final startLon = o!.lo + 0.02;
+          planePos = LatLng(
+            startLat + (o!.la - startLat) * ctl.value,
+            startLon + (o!.lo - startLon) * ctl.value,
+          );
+        } else if ((et == Etapa.viaje) && o != null && d != null) {
+          planePos = LatLng(
+            o!.la + (d!.la - o!.la) * ctl.value,
+            o!.lo + (d!.lo - o!.lo) * ctl.value,
+          );
+        }
+
         return Stack(
           children: [
             Positioned.fill(
-              child: LayoutBuilder(
-                builder: (c, bx) {
-                  vs = Size(bx.maxWidth, bx.maxHeight);
-                  if (!ini) {
-                    ini = true;
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) tc.value = mat(yo, 0.5);
-                    });
-                  }
-                  return Stack(
-                    children: [
-                      Positioned.fill(
-                        child: InteractiveViewer(
-                          transformationController: tc,
-                          constrained: false,
-                          minScale: 0.16,
-                          maxScale: 5,
-                          boundaryMargin: const EdgeInsets.all(600),
+              child: FlutterMap(
+                mapController: mapController,
+                options: const MapOptions(
+                  initialCenter: LatLng(yoLat, yoLon),
+                  initialZoom: 13.0,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'ar.edu.tecnica3.aerotaxi',
+                  ),
+                  if (o != null && d != null)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: [o!.p, d!.p],
+                          color: Colors.blue,
+                          strokeWidth: 4.0,
+                        ),
+                        if (et == Etapa.viaje && planePos != null)
+                          Polyline(
+                            points: [o!.p, planePos],
+                            color: verde,
+                            strokeWidth: 5.0,
+                          ),
+                      ],
+                    ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: const LatLng(yoLat, yoLon),
+                        width: 40,
+                        height: 40,
+                        child: const Icon(Icons.my_location, color: Colors.blue, size: 24),
+                      ),
+                      for (final t in datos.terminales)
+                        Marker(
+                          point: t.p,
+                          width: 40,
+                          height: 40,
                           child: GestureDetector(
-                            onTapUp: (e) => tocar(e.localPosition),
-                            child: SizedBox(
-                              width: ancho,
-                              height: alto,
-                              child: Stack(
-                                children: [
-                                  RepaintBoundary(
-                                    child: CustomPaint(size: const Size(ancho, alto), painter: Base(dk, esc)),
-                                  ),
-                                  CustomPaint(
-                                    size: const Size(ancho, alto),
-                                    painter: Din(sim, datos.terminales, o, d, ctl.value, fase, ps, dk, esc, rep),
-                                  ),
-                                ],
+                            onTap: () {
+                              setState(() {
+                                if (o == null) {
+                                  o = t;
+                                } else if (t != o) {
+                                  d = t;
+                                }
+                              });
+                              ajustar();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: (o == t) ? verde : (d == t ? Colors.black : Colors.white),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black, width: 1.5),
                               ),
+                              child: Icon(Icons.flight_takeoff, size: 20, color: (o == t || d == t) ? Colors.white : Colors.black87),
                             ),
                           ),
                         ),
-                      ),
-                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: Clim(sim.clima, rep)))),
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        right: 10,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  pill(ctx, sim.clima.ic, '${sim.temp.round()}° ${sim.clima.nom}', ci: sim.clima.col),
-                                  pill(ctx, Icons.air, '${sim.viento.round()} km/h'),
-                                  pill(ctx, Icons.traffic, 'Tráfico ${sim.trNom.toLowerCase()}', ci: sim.trCol),
-                                  pill(ctx, Icons.schedule, fmtH(sim.hora) + (sim.auto ? '' : ' (sim)')),
-                                  pill(ctx, Icons.flight, '${sim.cercanos} cerca', ci: verde),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            alertaW(al),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        left: 16,
-                        top: 80,
-                        child: CircleAvatar(
-                          backgroundColor: cs.surface,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            onPressed: () => setState(() => _mostrandoMapa = false),
+                      if (planePos != null)
+                        Marker(
+                          point: planePos,
+                          width: 40,
+                          height: 40,
+                          child: Container(
+                            decoration: const BoxDecoration(color: verde, shape: BoxShape.circle),
+                            child: const Icon(Icons.flight, color: Colors.white, size: 22),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        right: 12,
-                        bottom: 340,
-                        child: Column(
-                          children: [
-                            fab(ctx, Icons.add, () => ir(vs.center(Offset.zero) * 0 + _centro(), cl(esc.value * 1.5, 0.16, 5))),
-                            fab(ctx, Icons.remove, () => ir(_centro(), cl(esc.value / 1.5, 0.16, 5))),
-                            fab(ctx, sim.verTr ? Icons.layers : Icons.layers_outlined, () => sim.setTr(!sim.verTr)),
-                            fab(ctx, Icons.tune, () => abrirSim(ctx)),
-                            fab(ctx, Icons.my_location, () => ir(yo, 0.9)),
-                          ],
-                        ),
-                      ),
                     ],
-                  );
-                },
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 10,
+              left: 10,
+              right: 10,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        pill(ctx, sim.clima.ic, '${sim.temp.round()}° ${sim.clima.nom}', ci: sim.clima.col),
+                        pill(ctx, Icons.air, '${sim.viento.round()} km/h'),
+                        pill(ctx, Icons.traffic, 'Tráfico ${sim.trNom.toLowerCase()}', ci: sim.trCol),
+                        pill(ctx, Icons.schedule, fmtH(sim.hora) + (sim.auto ? '' : ' (sim)')),
+                        pill(ctx, Icons.flight, '${sim.cercanos} cerca', ci: verde),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  alertaW(al),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 16,
+              top: 80,
+              child: CircleAvatar(
+                backgroundColor: cs.surface,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => setState(() => _mostrandoMapa = false),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 12,
+              bottom: 340,
+              child: Column(
+                children: [
+                  fab(ctx, Icons.add, () => mapController.move(mapController.camera.center, mapController.camera.zoom + 1)),
+                  fab(ctx, Icons.remove, () => mapController.move(mapController.camera.center, mapController.camera.zoom - 1)),
+                  fab(ctx, sim.verTr ? Icons.layers : Icons.layers_outlined, () => sim.setTr(!sim.verTr)),
+                  fab(ctx, Icons.tune, () => abrirSim(ctx)),
+                  fab(ctx, Icons.my_location, () => mapController.move(const LatLng(yoLat, yoLon), 13.0)),
+                ],
               ),
             ),
             Positioned(
@@ -2528,13 +1912,8 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
       children: [
         Row(
           children: [
-            Expanded(
-              child: Text(d?.nombre ?? 'Seleccioná tu destino', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => setState(() => _mostrandoMapa = false),
-            ),
+            Expanded(child: Text(d?.nombre ?? 'Seleccioná tu destino', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+            IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _mostrandoMapa = false)),
           ],
         ),
         const SizedBox(height: 8),
@@ -2581,9 +1960,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
                           children: [
                             const Icon(Icons.verified_user, size: 14, color: verde),
                             const SizedBox(width: 4),
-                            Flexible(
-                              child: Text('${a.seg.cert} · llega en ${k.llega} min', style: const TextStyle(fontSize: 12)),
-                            ),
+                            Flexible(child: Text('${a.seg.cert} · llega en ${k.llega} min', style: const TextStyle(fontSize: 12))),
                           ],
                         ),
                     ],
@@ -2622,11 +1999,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
           children: [
             IconButton(onPressed: () => setState(() => et = Etapa.elegir), icon: const Icon(Icons.arrow_back)),
             Expanded(
-              child: Text(
-                '${a0.nombre} → ${b0.nombre}',
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              child: Text('${a0.nombre} → ${b0.nombre}', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
             Text('${ref.km.toStringAsFixed(1)} km'),
           ],
@@ -2642,22 +2015,6 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text('Ahorrás $ahorro min vs auto (${ref.auto} min con tráfico ${sim.trNom.toLowerCase()})',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                ),
-              ],
-            ),
-          ),
-        if (ref.sg >= 1.2)
-          Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: const Color(0x22EF6C00), borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              children: [
-                const Icon(Icons.trending_up, color: Color(0xFFEF6C00), size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('Tarifa dinámica x${ref.sg.toStringAsFixed(1)} por ${sim.motivo(a0)}',
                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                 ),
               ],
@@ -2855,9 +2212,7 @@ class _ViajarState extends State<Viajar> with TickerProviderStateMixin {
           children: [
             const Icon(Icons.check_circle, color: verde, size: 32),
             const SizedBox(width: 10),
-            Expanded(
-              child: Text('¡Llegaste a ${v.d.nombre}!', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ),
+            Expanded(child: Text('¡Llegaste a ${v.d.nombre}!', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
           ],
         ),
         const SizedBox(height: 12),
@@ -2986,8 +2341,7 @@ class Servicios extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(t.nombre, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                              Text('${sim.tAire(km, 200)} min en aire\n${sim.tAuto(km)} min en auto',
-                                  style: const TextStyle(fontSize: 12)),
+                              Text('${sim.tAire(km, 200)} min en aire\n${sim.tAuto(km)} min en auto', style: const TextStyle(fontSize: 12)),
                               if (sg >= 1.2) chipSg(sg) else const Text('Tarifa normal', style: TextStyle(fontSize: 12, color: verde)),
                             ],
                           ),
@@ -3077,7 +2431,10 @@ class Ciudad extends StatelessWidget {
       builder: (c, _) {
         final cm = sim.clima;
         final ts = [...datos.terminales]..sort((a, b) => b.dem.compareTo(a.dem));
+        final incidentesCount = sim.inc?.length ?? 0;
+        final alertas = sim.alertas;
         const w = TextStyle(color: Colors.white);
+
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -3095,8 +2452,7 @@ class Ciudad extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${sim.temp.round()}° ${cm.nom}',
-                                style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                            Text('${sim.temp.round()}° ${cm.nom}', style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
                             Text('Viento ${sim.viento.round()} km/h · ${fmtH(sim.hora)}', style: w),
                           ],
                         ),
@@ -3139,38 +2495,17 @@ class Ciudad extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  LinearProgressIndicator(
-                    value: sim.base,
-                    minHeight: 8,
-                    color: sim.trCol,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+                  LinearProgressIndicator(value: sim.base, minHeight: 8, color: sim.trCol, borderRadius: BorderRadius.circular(4)),
                   const SizedBox(height: 10),
                   Text('Velocidad media en auto: ${(36 * (1 - 0.6 * sim.base)).round()} km/h'),
-                  Text('Incidentes activos: ${sim.inc.length}'),
+                  Text('Incidentes activos: $incidentesCount'),
                   Text('Aeronaves disponibles: ${sim.cercanos}'),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      for (final e in [(0.1, 'Fluido'), (0.4, 'Moderado'), (0.7, 'Denso'), (0.95, 'Detenido')])
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.circle, size: 10, color: nivCol(e.$1)),
-                              const SizedBox(width: 4),
-                              Text(e.$2, style: const TextStyle(fontSize: 11)),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
                 ],
               ),
             ),
             const Text('Alertas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            for (final a in sim.alertas) Padding(padding: const EdgeInsets.only(bottom: 8), child: alertaW(a)),
+            for (final a in alertas) Padding(padding: const EdgeInsets.only(bottom: 8), child: alertaW(a)),
             const SizedBox(height: 10),
             const Text('Terminales por demanda', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -3188,7 +2523,6 @@ class Ciudad extends StatelessWidget {
     );
   }
 }
-
 class Perfil extends StatelessWidget {
   const Perfil({super.key});
 
@@ -3202,19 +2536,12 @@ class Perfil extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Center(
-              child: CircleAvatar(
-                radius: 42,
-                child: Text(p.nombre[0], style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
-              ),
-            ),
+            Center(child: CircleAvatar(radius: 42, child: Text(p.nombre[0], style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold)))),
             const SizedBox(height: 12),
             Center(child: Text(p.nombre, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
             Center(child: Text(p.email)),
             const SizedBox(height: 8),
-            Center(
-              child: Chip(avatar: const Icon(Icons.circle, size: 10, color: verde), label: Text(p.conectar())),
-            ),
+            Center(child: Chip(avatar: const Icon(Icons.circle, size: 10, color: verde), label: Text(p.conectar()))),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
@@ -3229,8 +2556,7 @@ class Perfil extends StatelessWidget {
                     children: [
                       const Icon(Icons.emoji_events, color: Colors.amber),
                       const SizedBox(width: 8),
-                      Text('AeroPuntos · ${datos.nivel}',
-                          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('AeroPuntos · ${datos.nivel}', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                       const Spacer(),
                       Text('${datos.puntos}', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                     ],
@@ -3278,31 +2604,6 @@ class Perfil extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class MapaOpenStreetMap extends StatelessWidget {
-  const MapaOpenStreetMap({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // Usamos un SizedBox para darle un tamaño fijo y asegurar que se renderice correctamente en pantalla.
-    // (Si está dentro de una Column y quieres que ocupe todo el espacio disponible, puedes cambiar SizedBox por Expanded).
-    return SizedBox(
-      height: 400, // Altura de ejemplo, ajústala según el diseño de tu app de AeroTaxi
-      child: FlutterMap(
-        options: MapOptions(
-          initialCenter: const LatLng(-34.6037, -58.3816), // Coordenadas iniciales (ej. Buenos Aires)
-          initialZoom: 13.0,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.aerotaxi', // Debe coincidir exactamente con el applicationId de tu AndroidManifest.xml
-          ),
-        ],
-      ),
     );
   }
 }
