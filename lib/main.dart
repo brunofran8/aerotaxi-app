@@ -3287,20 +3287,22 @@ class MapaOpenStreetMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      options: MapOptions(
-        // Coordenadas iniciales (por ejemplo, Buenos Aires) y nivel de zoom
-        initialCenter: const LatLng(-34.6037, -58.3816),
-        initialZoom: 13.0,
-      ),
-      children: [
-        // Capa de mosaicos (Tiles) provista por OpenStreetMap
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.aerotaxi', // Reemplaza con el nombre de paquete de tu app
+    // Usamos un SizedBox para darle un tamaño fijo y asegurar que se renderice correctamente en pantalla.
+    // (Si está dentro de una Column y quieres que ocupe todo el espacio disponible, puedes cambiar SizedBox por Expanded).
+    return SizedBox(
+      height: 400, // Altura de ejemplo, ajústala según el diseño de tu app de AeroTaxi
+      child: FlutterMap(
+        options: MapOptions(
+          initialCenter: const LatLng(-34.6037, -58.3816), // Coordenadas iniciales (ej. Buenos Aires)
+          initialZoom: 13.0,
         ),
-        // Puedes agregar marcadores, rutas o capas adicionales aquí abajo
-      ],
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.aerotaxi', // Debe coincidir exactamente con el applicationId de tu AndroidManifest.xml
+          ),
+        ],
+      ),
     );
   }
 }
